@@ -22,6 +22,11 @@ target_folder = my_inbox.Folders.Item('Notifications')  # Можно даже п
 all_emails = target_folder.Items
 
 
+def get_meeting_data() -> list:
+    meetings = [parse_notification(item) for item in last_hour_emails(all_emails)]
+    return meetings
+
+
 def parse_notification(notification: str) -> dict:
     rows = notification.split('\n')
     node_address = re.split(r'[«»]', rows[0])[1]
@@ -45,11 +50,10 @@ def proper_dt(com_dt):
 
 
 def last_hour_emails(emails) -> list:
-    hour_ago = dt.now()-timedelta(hours=1)
+    hour_ago = dt.now()-timedelta(days=2)
     notifications = [item.Body for item in emails if proper_dt(item.SentOn) > hour_ago]
     return notifications
 
 
 if __name__ == '__main__':
-    for item in last_hour_emails(all_emails):
-        print(parse_notification(item))
+    print(get_meeting_data())

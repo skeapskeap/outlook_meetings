@@ -1,35 +1,26 @@
 import win32com.client
-import datetime as dt
-from settings import MEETING_RECIPIENT, SRC_EMAIL
-
-OUTLOOK_APPOINTMENT_ITEM    = 1
-OUTLOOK_MEETING             = 1
-OUTLOOK_ORGANIZER           = 0
-OUTLOOK_OPTIONAL_ATTENDEE   = 2
-OUTLOOK_FORMAT              = '%d/%m/%Y %H:%M'
-ONE_HOUR                    = 60
-FIFTEEN_MINUTES             = 15
+from parse_mail import get_meeting_data
+from settings import MEETING_RECIPIENT, OUTLOOK_APPOINTMENT_ITEM, OUTLOOK_MEETING, \
+                     OUTLOOK_OPTIONAL_ATTENDEE, OUTLOOK_FORMAT, DURATION, REMIND
 
 outlook = win32com.client.Dispatch('Outlook.Application')
 
 
-def send_meeting_request(subject, time, recipient, body):
+def send_meeting(meeting_data):
     mtg = outlook.CreateItem(OUTLOOK_APPOINTMENT_ITEM)
     mtg.MeetingStatus = OUTLOOK_MEETING
-    mtg.Subject = subject
-    mtg.Start = time.strftime(OUTLOOK_FORMAT)
-    mtg.Duration = ONE_HOUR
-    mtg.ReminderMinutesBeforeStart = FIFTEEN_MINUTES
+    mtg.Subject = meeting_data['node']
+    mtg.Start = meeting_data['time_start'].strftime(OUTLOOK_FORMAT)
+    mtg.Duration = DURATION
+    mtg.ReminderMinutesBeforeStart = REMIND
     mtg.ResponseRequested = False
-    mtg.Body = body
-    invite = mtg.Recipients.Add(recipient)
+    mtg.Body = meeting_data['url']
+    invite = mtg.Recipients.Add(MEETING_RECIPIENT)
     invite.Type = OUTLOOK_OPTIONAL_ATTENDEE
     mtg.Send()
 
 
-if __name__ == "__main__":
-    time = dt.datetime.now() + dt.timedelta(hours=3)
-    test_recipient = MEETING_RECIPIENT
-    test_sender = SRC_EMAIL
-
-    send_meeting_request('Test Meeting', time, test_recipient, 'This is a test meeting.')
+if __name__ == '__main__':
+    meetings = get_meeting_data()
+    for meeting in meetings:
+        send_meeting(meeting)
