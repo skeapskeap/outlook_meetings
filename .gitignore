@@ -108,6 +108,6 @@ venv.bak/
 
 .DS_Store
 .vscode/
-settings.py
 meeting.py
 niokr.py
+check_outlook.exe
