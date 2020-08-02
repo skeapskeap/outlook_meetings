@@ -6,8 +6,9 @@ https://community.spiceworks.com/how_to/150253-send-mail-from-powershell-using-o
 """
 
 from datetime import datetime as dt, timedelta
+from settings import TIME_SPAN
 import re
-import win32com.client
+import win32com.client, win32timezone
 
 outlook = win32com.client.Dispatch('Outlook.Application').GetNamespace("MAPI")  # Это магия чтобы обращаться к COM-объектам Outlook.Application
 """
@@ -23,7 +24,7 @@ all_emails = target_folder.Items
 
 
 def get_meeting_data() -> list:
-    meetings = [parse_notification(item) for item in last_hour_emails(all_emails)]
+    meetings = [parse_notification(item) for item in recent_emails(all_emails)]
     return meetings
 
 
@@ -49,9 +50,9 @@ def proper_dt(com_dt):
     return standard_dt
 
 
-def last_hour_emails(emails) -> list:
-    hour_ago = dt.now()-timedelta(days=2)
-    notifications = [item.Body for item in emails if proper_dt(item.SentOn) > hour_ago]
+def recent_emails(emails) -> list:
+    time_ago = dt.now()-timedelta(hours=TIME_SPAN)
+    notifications = [item.Body for item in emails if proper_dt(item.SentOn) > time_ago]
     return notifications
 
 

@@ -17,6 +17,7 @@ def send_meeting(meeting_data):
     mtg.Body = meeting_data['url']
     invite = mtg.Recipients.Add(MEETING_RECIPIENT)
     invite.Type = OUTLOOK_OPTIONAL_ATTENDEE
+    print(f'Отправляю встречу {mtg.Subject} на {MEETING_RECIPIENT}')
     mtg.Send()
 
 
