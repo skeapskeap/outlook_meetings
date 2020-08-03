@@ -29,19 +29,23 @@ def get_meeting_data() -> list:
 
 
 def parse_notification(notification: str) -> dict:
-    rows = notification.split('\n')
-    node_address = re.split(r'[«»]', rows[0])[1]
-    url = re.split(r'[<>]', rows[0])[1]
-    times = re.findall(r'\d{2}:\d{2}', rows[3])
-    dates = re.findall(r'\d{2}.\d{2}.\d{2}', rows[3])
+    try:
+        rows = notification.split('\n')
+        node_address = re.split(r'[«»]', rows[0])[1]
+        url = re.split(r'[<>]', rows[0])[1]
+        times = re.findall(r'\d{2}:\d{2}', rows[3])
+        dates = re.findall(r'\d{2}.\d{2}.\d{2}', rows[3])
 
-    time_start = dates[0] + ' ' + times[0]
-    time_start = dt.strptime(time_start, '%d.%m.%y %H:%M')
+        time_start = dates[0] + ' ' + times[0]
+        time_start = dt.strptime(time_start, '%d.%m.%y %H:%M')
 
-    meeting_data = {'node':         node_address,
-                    'time_start':   time_start,
-                    'url':          url}
-    return meeting_data
+        meeting_data = {'node':         node_address,
+                        'time_start':   time_start,
+                        'url':          url}
+        return meeting_data
+    except IndexError:
+        print('Письмо не парсится')
+        return False
 
 
 def proper_dt(com_dt):

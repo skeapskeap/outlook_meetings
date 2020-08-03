@@ -24,4 +24,7 @@ def send_meeting(meeting_data):
 if __name__ == '__main__':
     meetings = get_meeting_data()
     for meeting in meetings:
-        send_meeting(meeting)
+        if meeting:
+            send_meeting(meeting)
+        else:
+            input('Press any key...')
