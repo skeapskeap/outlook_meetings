@@ -7,3 +7,5 @@ OUTLOOK_OPTIONAL_ATTENDEE   = 2
 OUTLOOK_FORMAT              = '%d/%m/%Y %H:%M'
 REMIND                      = 15  # 15 minutes
 TIME_SPAN                   = 24  # 24 hours
+USER = 'user@example.com'
+FOLDER = 'Notifications'

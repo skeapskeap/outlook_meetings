@@ -6,25 +6,35 @@ https://community.spiceworks.com/how_to/150253-send-mail-from-powershell-using-o
 """
 
 from datetime import datetime as dt, timedelta
-from settings import TIME_SPAN
+from settings import FOLDER, TIME_SPAN, USER
 import re
 import win32com.client, win32timezone
 
-outlook = win32com.client.Dispatch('Outlook.Application').GetNamespace("MAPI")  # Это магия чтобы обращаться к COM-объектам Outlook.Application
-"""
-    Эти штуки итерируются о_О
-    for item in email_boxes:
-        print(item)
-"""
-email_boxes = outlook.Folders  # Все ящики, добавленные в Outlook
-my_box = email_boxes.Item(6)        # это мой личный ящик
-my_inbox = my_box.Folders.Item(4)   # это папка Входящие в моём ящике
-target_folder = my_inbox.Folders.Item('Notifications')  # Можно даже по имени папку указывать
-all_emails = target_folder.Items
+
+def get_notifications(user=USER, folder=FOLDER):
+    # Это магия чтобы обращаться к COM-объектам Outlook.Application
+    outlook = win32com.client.Dispatch(
+        'Outlook.Application').GetNamespace("MAPI")
+    """
+        Эти штуки итерируются о_О
+        for item in email_boxes:
+            print(item)
+    """
+    # Все ящики, добавленные в Outlook
+    email_boxes = outlook.Folders
+    # это мой личный ящик
+    my_box = email_boxes.Item(user)
+    # это папка Входящие в моём ящике
+    my_inbox = my_box.Folders.Item('Входящие')
+    # Можно даже по имени папку указывать
+    target_folder = my_inbox.Folders.Item(folder)
+    return target_folder.Items
 
 
-def get_meeting_data() -> list:
-    meetings = [parse_notification(item) for item in recent_emails(all_emails)]
+def get_meeting_data(**kwargs) -> list:
+    notifications = get_notifications(**kwargs)
+    meetings = [parse_notification(item)
+                for item in recent_emails(notifications)]
     return meetings
 
 
